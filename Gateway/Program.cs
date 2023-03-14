@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 var message = new HttpClientHandler();
 message.ServerCertificateCustomValidationCallback += (requestMessage, certificate2, arg3, arg4) => true;
 
-builder.Services.AddTransient((servicer) => new HttpClient(message));
+builder.Services.AddScoped((servicer) => new HttpClient(message));
 
 var app = builder.Build();
 
