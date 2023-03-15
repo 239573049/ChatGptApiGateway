@@ -2,10 +2,6 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var message = new HttpClientHandler();
-message.ServerCertificateCustomValidationCallback += (requestMessage, certificate2, arg3, arg4) => true;
-
-builder.Services.AddTransient((servicer) => new HttpClient(message));
 
 var app = builder.Build();
 
@@ -15,15 +11,16 @@ app.Run(async (context) =>
     Console.WriteLine("«Î«ÛΩ¯»Î");
     try
     {
-        var http = context.RequestServices.GetService<HttpClient>();
 
+        var message = new HttpClientHandler();
+        message.ServerCertificateCustomValidationCallback += (_, _, _, _) => true;
+        using var http = new HttpClient(message);
         http.DefaultRequestHeaders.Remove("Authorization");
         http.DefaultRequestHeaders.Add("Authorization", context.Request.Headers.Authorization.ToString());
         var stream = new MemoryStream();
         await context.Request.Body.CopyToAsync(stream);
         var json = Encoding.UTF8.GetString(stream.ToArray());
         var content = new StringContent(json, Encoding.UTF8, "application/json");
-
         var data = await http.PostAsync("https://api.openai.com" + context.Request.Path + context.Request.QueryString.Value, content);
 
         foreach (var item in data.Headers)
