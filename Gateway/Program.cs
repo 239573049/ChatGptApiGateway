@@ -1,20 +1,26 @@
+using System.Diagnostics;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddScoped((servier) =>
+{
+    var message = new HttpClientHandler();
+    message.ServerCertificateCustomValidationCallback += (_, _, _, _) => true;
+    return new HttpClient(message);
+});
 
 var app = builder.Build();
 
 
 app.Run(async (context) =>
 {
-    Console.WriteLine("«Î«ÛΩ¯»Î");
+    var logger = context.RequestServices.GetService<ILogger>();
+    var stopwatch = Stopwatch.StartNew();
+    logger?.LogInformation($"start Request:{context.Request.Path} ");
     try
     {
-
-        var message = new HttpClientHandler();
-        message.ServerCertificateCustomValidationCallback += (_, _, _, _) => true;
-        using var http = new HttpClient(message);
+        var http = context.RequestServices.GetRequiredService<HttpClient>();
         http.DefaultRequestHeaders.Remove("Authorization");
         http.DefaultRequestHeaders.Add("Authorization", context.Request.Headers.Authorization.ToString());
         var stream = new MemoryStream();
@@ -40,10 +46,11 @@ app.Run(async (context) =>
     }
     catch (Exception e)
     {
-        Console.WriteLine(e);
+        logger?.LogError(e, "error server request:{Path} elapsed time {ElapsedMilliseconds} ms", context.Request.Path, stopwatch.ElapsedMilliseconds);
         throw;
     }
 
+    logger?.LogInformation("stop request:{Path} elapsed time {ElapsedMilliseconds} ms", context.Request.Path, stopwatch.ElapsedMilliseconds);
 });
 
 await app.RunAsync();
