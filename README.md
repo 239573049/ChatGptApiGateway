@@ -7,3 +7,9 @@
 .NET 7强力驱动，Yarp开源代理
 只需要几行代码即可使用
 
+docker 构建镜像
+
+```shell
+docker build -t registry.cn-shenzhen.aliyuncs.com/tokengo/chatgpt-gateway -f Gateway/Dockerfile .
+```
+
