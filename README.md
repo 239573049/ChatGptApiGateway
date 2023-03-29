@@ -71,7 +71,7 @@ services:
     image: registry.cn-shenzhen.aliyuncs.com/tokengo/chatgpt-gateway
     container_name: chatgpt
     volumes:
-      - ./appsettings.json/:/app/appsettings.json
+      - ./appsettings.json:/app/appsettings.json
     ports:
       - 1080:80
 ```
