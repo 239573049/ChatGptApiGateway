@@ -117,3 +117,18 @@ services:
 ```
 
 在`docker-compose.yml`目录中执行 `docker compose up -d` 即可，更新配置需要重启服务,可以使用`docker compose restart`重启
+
+## 无授权简洁使用
+
+```
+services:
+  chatgpt:
+    image: registry.cn-shenzhen.aliyuncs.com/tokengo/chatgpt-gateway
+    container_name: chatgpt
+    ports:
+      - 1080:80
+```
+
+直接使用`compose`启动服务
+
+技术交流群：737776595
