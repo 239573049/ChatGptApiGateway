@@ -11,8 +11,8 @@ interface IProps {
 interface IState {
     data: TokenModel[],
     columns: any[],
-    visible:boolean,
-    value:TokenModel,
+    visible: boolean,
+    value: TokenModel,
 }
 
 export default class TokenManager extends Component<IProps, IState> {
@@ -28,6 +28,10 @@ export default class TokenManager extends Component<IProps, IState> {
                 dataIndex: 'expire',
             },
             {
+                title: 'ChatGpt默认token',
+                dataIndex: 'chatGptToken',
+            },
+            {
                 title: '',
                 dataIndex: 'operate',
                 render: (value: string, data: TokenModel) => {
@@ -40,25 +44,29 @@ export default class TokenManager extends Component<IProps, IState> {
         visible: false,
         value: {
             token: '',
+            chatGptToken: '',
             expire: '2023-5-01 00:00:00'
         }
     }
 
-    handleOk(){
-        var {value,data,visible} = this.state;
+    handleOk() {
+        var { value, data, visible } = this.state;
         data.push(value);
         api.post("api/v1/Loggers", data)
             .then(res => {
                 Notification.success({ content: '新增', title: '提示' });
                 this.getList()
                 this.setState({
-                    visible:false
+                    visible: false
                 })
             });
-        this.setState({ data ,value:{
-            token: '',
-            expire: '2023-5-01 00:00:00'
-        }});
+        this.setState({
+            data, value: {
+                chatGptToken: '',
+                token: '',
+                expire: '2023-5-01 00:00:00'
+            }
+        });
     }
 
     removeToken(token: TokenModel) {
@@ -76,7 +84,7 @@ export default class TokenManager extends Component<IProps, IState> {
         this.getList()
     }
 
-    getList(){
+    getList() {
         api.get('api/v1/Loggers/List')
             .then(res => {
                 console.log(res.data);
@@ -92,33 +100,35 @@ export default class TokenManager extends Component<IProps, IState> {
 
 
     render() {
-        var { data, value,columns } = this.state;
+        var { data, value, columns } = this.state;
         return (<div>
             <div>
-                <Button theme='solid' type='primary' style={{ marginRight: 8 }} onClick={()=>this.setState({
-                    visible:true
+                <Button theme='solid' type='primary' style={{ marginRight: 8 }} onClick={() => this.setState({
+                    visible: true
                 })}>新增token</Button>
             </div>
             <Table columns={columns} dataSource={data} pagination={false} />
             <Modal
                 title="自定义样式"
                 visible={this.state.visible}
-                onOk={()=>this.handleOk()}
-                onCancel={()=>this.setState({
-                    visible:false
+                onOk={() => this.handleOk()}
+                onCancel={() => this.setState({
+                    visible: false
                 })}
                 centered
                 bodyStyle={{ overflow: 'auto', height: 200 }}
             >
-                <div>
-                    <Input value={value.token} onChange={(v)=>{
-                            value.token=v;
-                            this.setState({value})
-                        }} defaultValue='token'></Input>
-                </div>
+                <Input value={value.token} onChange={(v) => {
+                    value.token = v;
+                    this.setState({ value })
+                }} defaultValue='token'></Input>
+                <Input value={value.chatGptToken} onChange={(v) => {
+                    value.chatGptToken = v;
+                    this.setState({ value })
+                }} defaultValue='ChatGptToken'></Input>
                 <div>
                     <div style={{ textAlign: 'center', margin: 5 }}>过期时间</div>
-                    <DatePicker value={value.expire} onChange={(a:any,dateStr:any)=>{
+                    <DatePicker value={value.expire} onChange={(a: any, dateStr: any) => {
                         value.expire = dateStr;
                         this.setState({
                             value

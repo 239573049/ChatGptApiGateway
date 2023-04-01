@@ -8,5 +8,6 @@ export interface TabModel{
 
 export interface TokenModel{
     token:string,
-    expire:string
+    expire:string,
+    chatGptToken:string
 }

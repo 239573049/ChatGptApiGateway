@@ -8,4 +8,9 @@ public class TokenOptions
     /// 到期时间
     /// </summary>
     public string Expire { get; set; }
+
+    /// <summary>
+    /// ChatGpt 默认携带token
+    /// </summary>
+    public string ChatGptToken { get; set; }
 }

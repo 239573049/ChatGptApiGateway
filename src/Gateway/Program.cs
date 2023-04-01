@@ -24,6 +24,9 @@ builder.Services.AddSingleton((s) =>
     return new List<TokenOptions>();
 });
 
+
+#if DEBUG
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", corsBuilder =>
@@ -32,19 +35,22 @@ builder.Services.AddCors(options =>
             .AllowCredentials();
     });
 });
+#endif
 
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
 var app = builder.AddServices();
 
+#if DEBUG
 app.UseCors("CorsPolicy");
+#endif
 
 app.Use(async (context, next) =>
 {
     try
     {
-        if(context.Request.Path == "/" || context.Request.Path == "/admin" || context.Request.Path == "/admin")
+        if (context.Request.Path == "/" || context.Request.Path == "/admin" || context.Request.Path == "/admin")
         {
             using var index = File.OpenRead("./wwwroot/index.html");
             context.Response.StatusCode = 200;
@@ -107,6 +113,12 @@ app.Map("/v1", builder =>
                     else
                     {
                         var ip = context.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+                        // 当设置了默认token并且请求并没有携带token的时候使用默认token
+                        if (!value.ChatGptToken.IsNullOrWhiteSpace() && !context.Response.Headers.Any(x => x.Key == "Authorization"))
+                        {
+                            context.Response.Headers.Remove("Authorization");
+                            context.Response.Headers.Add("Authorization", value.ChatGptToken.StartsWith("Bearer ") ? value.ChatGptToken : "Bearer " + value.ChatGptToken);
+                        }
                         logger?.LogInformation("Token：{token} IP: {ip} 请求时间：{Date}", token, ip, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                         await next.Invoke(context);
                     }
