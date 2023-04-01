@@ -1,0 +1,18 @@
+html , body{
+    height: 100%;
+}
+
+#root{
+    height: 100%;
+}
+
+.semi-layout{
+    height: 100%;
+}
+
+.semi-tabs-content{
+    height: 100%;
+}
+.semi-tabs-pane-motion-overlay {
+    height: 100%;
+}
