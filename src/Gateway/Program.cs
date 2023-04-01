@@ -11,7 +11,7 @@ builder.Configuration
 builder.Services.Configure<List<TokenOptions>>(builder.Configuration.GetSection("Tokens"));
 
 builder.Logging.AddProvider(new LogInterceptorProvider());
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddSignalR();
 
 builder.Services.AddSingleton((s) =>
@@ -51,8 +51,11 @@ app.Use(async (context, next) =>
             context.Response.ContentType = "text/html; charset=utf-8";
             await index.CopyToAsync(context.Response.Body);
         }
+        else
+        {
+            await next(context);
+        }
 
-        await next(context);
     }
     catch (UnauthorizedAccessException)
     {

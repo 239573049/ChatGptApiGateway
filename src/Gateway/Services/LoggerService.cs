@@ -8,18 +8,18 @@ namespace Gateway.Services;
 public class LoggerService : ServiceBase
 {
 
-    public List<TokenOptions>? GetList([FromServices] List<TokenOptions> options, HttpContext httpContext)
+    public List<TokenOptions>? GetList([FromServices] List<TokenOptions> options)
     {
-        if (!GatewayApp.CurrentUser.TryGetValue(httpContext.Request.Headers.Authorization.ToString(), out _))
+        if (!GatewayApp.CurrentUser.TryGetValue(Services.GetInstance<IHttpContextAccessor>().HttpContext.Request.Headers.Authorization.ToString(), out _))
         {
             throw new UnauthorizedAccessException();
         }
         return options;
     }
 
-    public async Task PostAsync([FromServices] List<TokenOptions> tokenOptions, [FromServices] HttpContext httpContext, [FromBody] List<TokenOptions> token)
+    public async Task PostAsync([FromServices] List<TokenOptions> tokenOptions, [FromBody] List<TokenOptions> token)
     {
-        if (!GatewayApp.CurrentUser.TryGetValue(httpContext.Request.Headers.Authorization.ToString(), out _))
+        if (!GatewayApp.CurrentUser.TryGetValue(Services.GetInstance<IHttpContextAccessor>().HttpContext.Request.Headers.Authorization.ToString(), out _))
         {
             throw new UnauthorizedAccessException();
         }

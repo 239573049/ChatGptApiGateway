@@ -40,22 +40,24 @@ export default class TokenManager extends Component<IProps, IState> {
         visible: false,
         value: {
             token: '',
-            expire: '2023-01-01 00:00:00'
+            expire: '2023-5-01 00:00:00'
         }
     }
 
     handleOk(){
-        var {value,data} = this.state;
-        
+        var {value,data,visible} = this.state;
         data.push(value);
         api.post("api/v1/Loggers", data)
             .then(res => {
                 Notification.success({ content: '新增', title: '提示' });
                 this.getList()
+                this.setState({
+                    visible:false
+                })
             });
         this.setState({ data ,value:{
             token: '',
-            expire: '2023-01-01 00:00:00'
+            expire: '2023-5-01 00:00:00'
         }});
     }
 

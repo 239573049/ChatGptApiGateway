@@ -112,7 +112,7 @@ export default class Logger extends Component<IProps, IState>{
         var { editor, init } = this.state;
         
         var hubConnection = new signalR.HubConnectionBuilder()
-            .withUrl("http://localhost:53969/logger-hub", { accessTokenFactory: () => window.localStorage.getItem("token")! })
+            .withUrl(process.env.NODE_ENV === "development" ? "http://localhost:53969/logger-hub" : "/logger-hub", { accessTokenFactory: () => window.localStorage.getItem("token")! })
             .build()
 
         hubConnection.start();
