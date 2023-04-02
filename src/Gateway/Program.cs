@@ -144,6 +144,9 @@ app.MapHub<LoggerHub>("/logger-hub");
 
 app.MapReverseProxy();
 
+app.UseRouting();
+
 app.UseStaticFiles();
+app.UseEndpoints(options => { });
 
 await app.RunAsync();
