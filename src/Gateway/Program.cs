@@ -57,8 +57,8 @@ app.Use(async (context, next) =>
                     // 当设置了默认token并且请求并没有携带token的时候使用默认token
                     if (!string.IsNullOrWhiteSpace(value.ChatGptToken) && !context.Response.Headers.Any(x => x.Key == "Authorization"))
                     {
-                        context.Response.Headers.Remove("Authorization");
-                        context.Response.Headers.Add("Authorization", value.ChatGptToken.StartsWith("Bearer ") ? value.ChatGptToken : "Bearer " + value.ChatGptToken);
+                        context.Request.Headers.Remove("Authorization");
+                        context.Request.Headers.Add("Authorization", value.ChatGptToken.StartsWith("Bearer ") ? value.ChatGptToken : "Bearer " + value.ChatGptToken);
                     }
                     logger?.LogInformation("Token：{token} IP: {ip} 请求时间：{Date}", token, ip, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                     await next.Invoke(context);
