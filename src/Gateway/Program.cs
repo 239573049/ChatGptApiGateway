@@ -8,8 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-builder.Services.Configure<List<TokenOptions>>(builder.Configuration.GetSection("Tokens"));
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.Configure<List<TokenOptions>>(builder.Configuration.GetSection("Tokens"));
 builder.Logging.AddProvider(new LogInterceptorProvider());
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSignalR();
