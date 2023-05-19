@@ -16,13 +16,13 @@ docker build -t registry.cn-shenzhen.aliyuncs.com/tokengo/chatgpt-gateway -f src
 ## 简单使用Docker
 
 ```shell
-docker run -d -p 1800:80 -e Token=admin --name gateway registry.cn-shenzhen.aliyuncs.com/tokengo/chatgpt-gateway
+docker run -d -p 1800:80 --name gateway registry.cn-shenzhen.aliyuncs.com/tokengo/chatgpt-gateway
 ```
 
 ### 管理token自行提供文件管理
 
 ```shell
-docker run -d -p 1800:80 -e Token=admin -v ./token.json:/app/token.json --name gateway registry.cn-shenzhen.aliyuncs.com/tokengo/chatgpt-gateway
+docker run -d -p 1800:80 -v ./token.json:/app/token.json --name gateway registry.cn-shenzhen.aliyuncs.com/tokengo/chatgpt-gateway
 ```
 
 `token.json`内容格式
