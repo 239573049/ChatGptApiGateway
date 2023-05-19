@@ -44,8 +44,6 @@ services:
   chatgpt:
     image: registry.cn-shenzhen.aliyuncs.com/tokengo/chatgpt-gateway
     container_name: chatgpt
-    environment:
-      - Token=token
     volumes:
       - ./token.json:/app/token.json
     ports:
