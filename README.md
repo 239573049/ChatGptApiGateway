@@ -19,6 +19,12 @@ docker build -t registry.cn-shenzhen.aliyuncs.com/tokengo/chatgpt-gateway -f src
 docker run -d -p 1800:80 -e Token=admin --name gateway registry.cn-shenzhen.aliyuncs.com/tokengo/chatgpt-gateway
 ```
 
+## 增加默认的ChatGPT的Key
+
+```shell
+docker run -d -p 1800:80 -e Token=admin -e ChatGptKey=sk-xxxxx --name gateway registry.cn-shenzhen.aliyuncs.com/tokengo/chatgpt-gateway
+```
+
 默认的`docker compose`文件
 
 ```yaml
@@ -32,9 +38,6 @@ services:
       - 1800:80
 
 ```
-
-
-
 
 
 ## 使用代理
