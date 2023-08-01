@@ -11,6 +11,9 @@ var app = builder.Build();
 app.Use(async (context, next) =>
 {
     var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+    logger.LogInformation("{DateTime} Request  Path {Path} Method {Method} ",
+        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), context.Request.Path,
+        context.Request.Method);
     if (string.IsNullOrEmpty(token))
     {
         await next(context);
@@ -18,12 +21,13 @@ app.Use(async (context, next) =>
     else
     {
         context.Request.Headers.TryGetValue("X-Token", out var tokenValue);
-        if(tokenValue != token)
+        if (tokenValue != token)
         {
             logger.LogWarning("token is invalid");
             context.Response.StatusCode = 403;
             return;
         }
+
         await next(context);
     }
 });
