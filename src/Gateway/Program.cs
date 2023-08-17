@@ -16,19 +16,10 @@ app.Use(async (context, next) =>
         DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), context.Request.Path,
         context.Request.Method);
 
-    // TODO: 如果环境变量设置了Key，则使用Key
-    if (!string.IsNullOrEmpty(key))
+    // 如果环境变量设置了Token，则使用Token。
+    if (!string.IsNullOrEmpty(token))
     {
-        context.Request.Headers.Remove("Authorization");
-        context.Request.Headers.Add("Authorization", $"Bearer {key}");
-    }
-    
-    if (string.IsNullOrEmpty(token))
-    {
-        await next(context);
-    }
-    else
-    {
+        // 如果请求头中没有X-Token，则返回403
         context.Request.Headers.TryGetValue("X-Token", out var tokenValue);
         if (tokenValue != token)
         {
@@ -36,9 +27,23 @@ app.Use(async (context, next) =>
             context.Response.StatusCode = 403;
             return;
         }
-
-        await next(context);
     }
+    
+    // 当请求头中包含Authorization时，不进行验证。
+    if (context.Request.Headers.ContainsKey("Authorization"))
+    {
+        await next(context);
+        return;
+    }
+    
+    // TODO: 如果环境变量设置了Key，则使用Key
+    if (!string.IsNullOrEmpty(key))
+    {
+        context.Request.Headers.Remove("Authorization");
+        context.Request.Headers.Add("Authorization", $"Bearer {key}");
+    }
+    
+    await next(context);
 });
 
 app.MapReverseProxy();
