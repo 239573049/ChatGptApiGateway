@@ -55,6 +55,7 @@ app.Use(async (context, next) =>
         // 从Base64解码
         endpointValue = Encoding.UTF8.GetString(Convert.FromBase64String(endpointValue));
 
+        Console.WriteLine("endpointValue: " + endpointValue);
         var httpForwarder = context.RequestServices.GetRequiredService<IHttpForwarder>();
         await httpForwarder.SendAsync(context, endpointValue, new HttpMessageInvoker(new HttpClientHandler()));
         return;
