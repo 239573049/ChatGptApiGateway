@@ -1,4 +1,5 @@
 using System.Text;
+using System.Web;
 using Yarp.ReverseProxy.Forwarder;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,7 +49,20 @@ app.Use(async (context, next) =>
         context.Request.Headers.Add("Authorization", $"Bearer {key}");
     }
 
-    if (context.Request.Headers.TryGetValue("Endpoint", out var endpoint))
+    if (context.Request.Query.TryGetValue("Endpoint", out var endpoint))
+    {
+        var endpointValue = endpoint.ToString();
+
+        // 从Base64解码
+        endpointValue = HttpUtility.UrlDecode(endpointValue);
+
+        Console.WriteLine("endpointValue: " + endpointValue);
+        var httpForwarder = context.RequestServices.GetRequiredService<IHttpForwarder>();
+        await httpForwarder.SendAsync(context, endpointValue, new HttpMessageInvoker(new HttpClientHandler()));
+        return;
+    }
+
+    if (context.Request.Headers.TryGetValue("Endpoint", out endpoint))
     {
         var endpointValue = endpoint.ToString();
 
@@ -60,6 +74,7 @@ app.Use(async (context, next) =>
         await httpForwarder.SendAsync(context, endpointValue, new HttpMessageInvoker(new HttpClientHandler()));
         return;
     }
+
 
     await next(context);
 });
