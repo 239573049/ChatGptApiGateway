@@ -1,3 +1,6 @@
+using System.Text;
+using Yarp.ReverseProxy.Forwarder;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // 获取环境变量中的token
@@ -6,6 +9,8 @@ var key = Environment.GetEnvironmentVariable("GPTKey");
 
 builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+
+builder.Services.AddHttpForwarder();
 
 var app = builder.Build();
 
@@ -28,21 +33,33 @@ app.Use(async (context, next) =>
             return;
         }
     }
-    
+
     // 当请求头中包含Authorization时，不进行验证。
     if (context.Request.Headers.ContainsKey("Authorization"))
     {
         await next(context);
         return;
     }
-    
+
     // TODO: 如果环境变量设置了Key，则使用Key
     if (!string.IsNullOrEmpty(key))
     {
         context.Request.Headers.Remove("Authorization");
         context.Request.Headers.Add("Authorization", $"Bearer {key}");
     }
-    
+
+    if (context.Request.Headers.TryGetValue("Endpoint", out var endpoint))
+    {
+        var endpointValue = endpoint.ToString();
+
+        // 从Base64解码
+        endpointValue = Encoding.UTF8.GetString(Convert.FromBase64String(endpointValue));
+
+        var httpForwarder = context.RequestServices.GetRequiredService<IHttpForwarder>();
+        await httpForwarder.SendAsync(context, endpointValue, new HttpClient(), new ForwarderRequestConfig());
+        return;
+    }
+
     await next(context);
 });
 

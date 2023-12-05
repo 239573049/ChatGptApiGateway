@@ -46,4 +46,8 @@ services:
 然后在请求头中添加`X-Token`: `Token`，
 这样就可以做授权访问了，如果未添加token默认是不需要使用token即可访问代理服务的
 
+如果想要Gateway支持其他端点请在请求头增加`Endpoint`，值请先使用Base64编码防止url错误
+
+`Endpoint`:`base64字符串`
+
 技术交流群：737776595
